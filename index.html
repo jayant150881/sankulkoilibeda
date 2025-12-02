@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>स्कूल प्रबंधन प्रणाली — हिंदी</title>
+  <meta name="description" content="हिंदी में सरल स्कूल मैनेजमेंट सिस्टम (Frontend demo using localStorage)." />
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container top-inner">
+      <div class="brand">
+        <strong>विद्यालय प्रबंधक</strong>
+        <small>स्कूल मैनेजमेंट सिस्टम (हिंदी)</small>
+      </div>
+      <nav class="mainnav">
+        <button data-tab="dashboard" class="nav-btn active">डैशबोर्ड</button>
+        <button data-tab="students" class="nav-btn">छात्र</button>
+        <button data-tab="attendance" class="nav-btn">उपस्थिति</button>
+        <button data-tab="teachers" class="nav-btn">शिक्षक</button>
+        <button data-tab="timetable" class="nav-btn">समय सारिणी</button>
+        <button data-tab="fees" class="nav-btn">फीस</button>
+      </nav>
+      <div class="top-actions">
+        <button id="resetData" class="btn ghost">डेटा रीसेट करें</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="tab active">
+      <h1>डैशबोर्ड</h1>
+      <div class="grid">
+        <div class="card">
+          <h3 id="statStudents">छात्र: 0</h3>
+          <p>कुल पंजीकृत छात्र</p>
+        </div>
+        <div class="card">
+          <h3 id="statTeachers">शिक्षक: 0</h3>
+          <p>कुल पंजीकृत शिक्षक</p>
+        </div>
+        <div class="card">
+          <h3 id="statTodayAtt">आज की उपस्थिति</h3>
+          <p id="statTodayAttVal">—</p>
+        </div>
+        <div class="card">
+          <h3>नोट</h3>
+          <p>यह डेमो क्लाइंट-साइड है — डेटा आपके ब्राउज़र के localStorage में सुरक्षित रहता है।</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- STUDENTS -->
+    <section id="students" class="tab">
+      <h1>छात्र प्रबंधन</h1>
+
+      <form id="studentForm" class="form">
+        <h2 id="studentFormTitle">नया छात्र जोड़ें</h2>
+        <div class="row">
+          <label>नाम <input id="s_name" required minlength="2" /></label>
+          <label>कक्षा <input id="s_class" required /></label>
+        </div>
+        <div class="row">
+          <label>लिंग
+            <select id="s_gender">
+              <option value="लड़का">लड़का</option>
+              <option value="लड़की">लड़की</option>
+              <option value="अन्य">अन्य</option>
+            </select>
+          </label>
+          <label>रोल नंबर <input id="s_roll" required type="number" min="1" /></label>
+        </div>
+
+        <div class="row actions">
+          <button type="submit" class="btn primary">सहेजें</button>
+          <button type="button" id="studentFormReset" class="btn ghost">रीसेट</button>
+        </div>
+        <input type="hidden" id="s_id" />
+      </form>
+
+      <section class="list-section">
+        <h2>गति सूची</h2>
+        <input id="studentSearch" placeholder="नाम या कक्षा से खोजें..." />
+        <div id="studentsList" class="list"></div>
+      </section>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section id="attendance" class="tab">
+      <h1>उपस्थिति</h1>
+
+      <div class="attendance-top row">
+        <label>दिनांक <input type="date" id="att_date" /></label>
+        <button id="loadAttendance" class="btn">देखें / बनाएं</button>
+      </div>
+
+      <div id="attendanceContainer" class="attendance-container"></div>
+      <div id="attendanceMsg" class="muted"></div>
+    </section>
+
+    <!-- TEACHERS -->
+    <section id="teachers" class="tab">
+      <h1>शिक्षक प्रबंधन</h1>
+
+      <form id="teacherForm" class="form">
+        <h2 id="teacherFormTitle">नया शिक्षक जोड़ें</h2>
+        <div class="row">
+          <label>नाम <input id="t_name" required minlength="2" /></label>
+          <label>विषय <input id="t_subject" required /></label>
+        </div>
+        <div class="row actions">
+          <button type="submit" class="btn primary">सहेजें</button>
+          <button type="button" id="teacherFormReset" class="btn ghost">रीसेट</button>
+        </div>
+        <input type="hidden" id="t_id" />
+      </form>
+
+      <section class="list-section">
+        <h2>शिक्षक सूची</h2>
+        <div id="teachersList" class="list"></div>
+      </section>
+    </section>
+
+    <!-- TIMETABLE -->
+    <section id="timetable" class="tab">
+      <h1>समय सारिणी</h1>
+
+      <form id="ttForm" class="form">
+        <h2>नया समय जोड़ें</h2>
+        <div class="row">
+          <label>कक्षा <input id="tt_class" required /></label>
+          <label>दिन <select id="tt_day">
+            <option>सोमवार</option><option>मंगलवार</option><option>बुधवार</option>
+            <option>बृहस्पतिवार</option><option>शुक्रवार</option><option>शनिवार</option>
+          </select></label>
+        </div>
+        <div class="row">
+          <label>विषय <input id="tt_subject" required /></label>
+          <label>समय <input id="tt_time" placeholder="08:30 - 09:15" required /></label>
+        </div>
+        <div class="row actions">
+          <button type="submit" class="btn primary">जोड़ें</button>
+          <button type="button" id="ttReset" class="btn ghost">रीसेट</button>
+        </div>
+      </form>
+
+      <h2>समय सारिणी सूची</h2>
+      <div id="ttList" class="list"></div>
+    </section>
+
+    <!-- FEES -->
+    <section id="fees" class="tab">
+      <h1>फीस रिकॉर्ड</h1>
+
+      <form id="feeForm" class="form">
+        <h2>फीस जोड़ें</h2>
+        <div class="row">
+          <label>छात्र रोल नंबर <input id="f_roll" type="number" required /></label>
+          <label>राशि (₹) <input id="f_amount" type="number" required min="1" /></label>
+        </div>
+        <div class="row">
+          <label>तिथि <input id="f_date" type="date" required /></label>
+          <label>विवरण <input id="f_note" placeholder="जैसे: 2 माह की फीस" /></label>
+        </div>
+        <div class="row actions">
+          <button type="submit" class="btn primary">सहेजें</button>
+          <button type="button" id="feeReset" class="btn ghost">रीसेट</button>
+        </div>
+      </form>
+
+      <h2>फीस सूची</h2>
+      <div id="feesList" class="list"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container foot-inner">
+      <div>© <span id="year"></span> विद्यालय प्रबंधक</div>
+      <div class="muted">सिर्फ़ डेमो — कोई सर्वर-कनेक्शन नहीं।</div>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
